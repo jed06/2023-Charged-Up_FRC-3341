@@ -25,6 +25,7 @@ public final class Constants {
     public static final int XAxis = 0;
     public static final int Zero = 0;
     public static final int One = 1;
+    public static final double tickstoMeters = (1.0/(6.0*0.0254*Math.PI))*4096.0;
 
   }
 }

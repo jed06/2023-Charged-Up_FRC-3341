@@ -61,27 +61,32 @@ public class DriveTrain extends SubsystemBase
     rightDriveTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative, 0, 10);
     
     // Week 4 Motion Magic
-   leftDriveTalon.config_kP(0, 3, 10);
+   leftDriveTalon.config_kP(0, 2.5, 10);
    leftDriveTalon.config_kI(0, 0, 10);
    leftDriveTalon.config_kD(0, 0, 10);
-   leftDriveTalon.configMotionAcceleration(220, 10);
+   leftDriveTalon.configMotionAcceleration(328, 10);
    leftDriveTalon.configMotionCruiseVelocity(400, 10);
    // If Left Velocity is 200
    // then Left Accel 120
 
-   rightDriveTalon.config_kP(0, 3, 10);
+   rightDriveTalon.config_kP(0, 2.5, 10);
    rightDriveTalon.config_kI(0, 0, 10);
    rightDriveTalon.config_kD(0, 0, 10);
-   rightDriveTalon.configMotionAcceleration(200, 10);
-   rightDriveTalon.configMotionCruiseVelocity(400, 10);
+   rightDriveTalon.configMotionAcceleration(2000, 10);
+   rightDriveTalon.configMotionCruiseVelocity(386, 10);
    // If  Right Velocity is 200
    // then Right Accel 90
 
   }
 
+  public void magicDrive(double displacement){
+    leftDriveTalon.set(ControlMode.MotionMagic, Constants.OperatorConstants.tickstoMeters*displacement);
+    rightDriveTalon.set(ControlMode.MotionMagic, Constants.OperatorConstants.tickstoMeters*displacement);
+  }
+
   public void tankDrive(double leftSpeed, double rightSpeed) {
-    rightDriveTalon.set(rightSpeed);
     leftDriveTalon.set(leftSpeed);
+    rightDriveTalon.set(rightSpeed);
   }
 
   
@@ -94,6 +99,9 @@ public class DriveTrain extends SubsystemBase
     return (leftDriveTalon.getSelectedSensorPosition(0) + rightDriveTalon.getSelectedSensorPosition(0)) / 2.0;
   }
 
+  public double getDisplacement(){
+    return (getTicks()/Constants.OperatorConstants.tickstoMeters);
+  }
 
   @Override
   public void periodic() {
