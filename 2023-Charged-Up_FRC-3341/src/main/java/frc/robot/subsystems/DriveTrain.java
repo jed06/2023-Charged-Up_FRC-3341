@@ -13,7 +13,10 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 
-
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.util.datalog.DoubleLogEntry;
+import edu.wpi.first.wpilibj.AnalogAccelerometer;
+import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.SPI;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -32,14 +35,23 @@ public class DriveTrain extends SubsystemBase
   private final WPI_TalonSRX rightDriveTalon;
   private final VictorSPX _leftDriveVictor;
   private final VictorSPX _rightDriveVictor;
+  private final AHRS navX;
+  public boolean logOverride = false;
+  public DoubleLogEntry anglelog;
 
   
   public DriveTrain() 
   {
+    DataLogManager.start();
+    DataLog log = DataLogManager.getLog();
+    anglelog = new DoubleLogEntry(log, "/my/double");
+
+    
     leftDriveTalon = new WPI_TalonSRX(Constants.OperatorConstants.LeftDriveTalonPort);
     rightDriveTalon = new WPI_TalonSRX(Constants.OperatorConstants.RightDriveTalonPort);
     _leftDriveVictor = new VictorSPX(Constants.OperatorConstants.LeftDriveVictorPort);
     _rightDriveVictor = new VictorSPX(Constants.OperatorConstants.RightDriveVictorPort);
+    navX = new AHRS(SPI.Port.kMXP);
 
     _leftDriveVictor.follow(leftDriveTalon);
     _rightDriveVictor.follow(rightDriveTalon);
@@ -74,8 +86,6 @@ public class DriveTrain extends SubsystemBase
    rightDriveTalon.config_kD(0, 0, 10);
    rightDriveTalon.configMotionAcceleration(2000, 10);
    rightDriveTalon.configMotionCruiseVelocity(386, 10);
-   // If  Right Velocity is 200
-   // then Right Accel 90
 
   }
 
@@ -103,14 +113,18 @@ public class DriveTrain extends SubsystemBase
     return (getTicks()/Constants.OperatorConstants.tickstoMeters);
   }
 
+  public double getYAngle(){
+    return navX.getPitch();
+  }
   @Override
   public void periodic() {
-    
-
-  
     tankDrive(RobotContainer.getJoy1().getY()*-0.2, RobotContainer.getJoy2().getY()*-0.2);
-
-   
+    if (RobotContainer.getJoy1().getRawButtonReleased(12)){
+      logOverride = !logOverride;
+    }
+    if (logOverride){
+      anglelog.append(getYAngle());
+    }
   }
 
   @Override
