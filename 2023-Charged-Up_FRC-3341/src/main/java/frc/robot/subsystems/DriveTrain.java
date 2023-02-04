@@ -105,6 +105,9 @@ public class DriveTrain extends SubsystemBase
     rightDriveTalon.setSelectedSensorPosition(0,0,10);
   }
 
+  public void resetNavX(){
+    navX.reset();
+  }
   public double getTicks() {
     return (leftDriveTalon.getSelectedSensorPosition(0) + rightDriveTalon.getSelectedSensorPosition(0)) / 2.0;
   }
@@ -116,6 +119,11 @@ public class DriveTrain extends SubsystemBase
   public double getYAngle(){
     return navX.getPitch();
   }
+
+  public double getAngle(){
+    return navX.getAngle();
+  }
+
   @Override
   public void periodic() {
     tankDrive(RobotContainer.getJoy1().getY()*-0.2, RobotContainer.getJoy2().getY()*-0.2);

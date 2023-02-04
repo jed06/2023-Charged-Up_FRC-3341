@@ -3,38 +3,44 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
-
+import frc.robot.subsystems.DriveTrain;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.DriveTrain;
 
-public class AutoBalance extends CommandBase {
-  /** Creates a new AutoBalance. */
-  DriveTrain dt = new DriveTrain();
-  double maxPower = 0.3; //if the robot was vertical(theoretically) the talons would go at this power 
-  double speed;
-  PIDController pidController = new PIDController(0.005, 0, 0);
-  public AutoBalance() {
+public class AutoTurn extends CommandBase {
+  /** Creates a new AutoTurn. */
+  DriveTrain dt;
+  double angle;
+  PIDController pidController = new PIDController(0.002, 0, 0);
+  public AutoTurn(DriveTrain dt, double angle) {
     // Use addRequirements() here to declare subsystem dependencies.
-    addRequirements(dt);
+    this.dt = dt;
+    this.angle = angle;
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    pidController.setSetpoint(0.0);
+    dt.resetNavX();
+
+    pidController.setSetpoint(angle);
+    pidController.setTolerance(1);
+    dt.setPowerLimits(0.7);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    speed = Math.sin(dt.getYAngle())*maxPower+pidController.calculate(dt.getYAngle());
-    dt.tankDrive(speed, speed);
+    double speed = pidController.calculate(dt.getAngle());
+    dt.tankDrive(-speed, speed );
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    dt.tankDrive(0, 0);
+    dt.setPowerLimits(1.0);
+  }
 
   // Returns true when the command should end.
   @Override

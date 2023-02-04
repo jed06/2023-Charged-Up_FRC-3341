@@ -14,14 +14,14 @@ import frc.robot.subsystems.DriveTrain;
 public class TankDrive extends CommandBase {
   /** Creates a new TankDrive. */
   private final DriveTrain _driveTrain; // declares drive train
-  private final Joystick _leftJoystick; // declares left joystick
-  private final Joystick _rightJoystick; //declares rightjoystick
+  private final double _leftPower; // declares left joystick
+  private final double _rightPower; //declares rightjoystick
 
-  public TankDrive(DriveTrain dt, Joystick leftJ, Joystick rightJ) {
+  public TankDrive(DriveTrain dt, Joystick leftp, Joystick rightp) {
     // Use addRequirements() here to declare subsystem dependencies.
     _driveTrain = dt; //initializes drive train
-    _leftJoystick = leftJ; // initializes left joystick
-    _rightJoystick = rightJ; // initializes right joystick
+    _leftPower = leftp; // initializes left joystick
+    _rightPower = rightp; // initializes right joystick
 
     addRequirements(_driveTrain); // tank drive has to use drive train
   }
@@ -33,9 +33,7 @@ public class TankDrive extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    
-    _driveTrain.tankDrive(0.8 * _leftJoystick.getRawAxis(Constants.OperatorConstants.YAxis), // gets y axis from joysticks and moves accordingly 
-                          0.8 * _rightJoystick.getRawAxis(Constants.OperatorConstants.YAxis));  
+    _driveTrain.tankDrive(_leftPower, _rightPower);
   }
 
   // Called once the command ends or is interrupted.
