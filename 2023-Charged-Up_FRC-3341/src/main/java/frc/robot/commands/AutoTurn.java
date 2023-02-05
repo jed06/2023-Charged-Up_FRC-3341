@@ -11,7 +11,7 @@ public class AutoTurn extends CommandBase {
   /** Creates a new AutoTurn. */
   DriveTrain dt;
   double angle;
-  PIDController pidController = new PIDController(0.002, 0, 0);
+  PIDController pidController = new PIDController(0.005, 0, 0.005);
   public AutoTurn(DriveTrain dt, double angle) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.dt = dt;
@@ -32,7 +32,8 @@ public class AutoTurn extends CommandBase {
   @Override
   public void execute() {
     double speed = pidController.calculate(dt.getAngle());
-    dt.tankDrive(-speed, speed );
+    dt.tankDrive(-speed, speed* 1.32 ); //right motor is 1.32 times slower than left
+    //dt.tankDrive(0.1*speed, 0.1*speed * 1.32);
   }
 
   // Called once the command ends or is interrupted.

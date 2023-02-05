@@ -4,22 +4,19 @@
 
 package frc.robot.commands;
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 760841a6d40f3c7f69e2e4de49538f77e47afc9b
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveTrain;
 
 public class AutoBalance extends CommandBase {
   /** Creates a new AutoBalance. */
-  DriveTrain dt = new DriveTrain();
+  DriveTrain dt;
   double maxPower = 0.3; //if the robot was vertical(theoretically) the talons would go at this power 
   double speed;
   PIDController pidController = new PIDController(0.005, 0, 0);
-  public AutoBalance() {
+  public AutoBalance( DriveTrain dt) {
     // Use addRequirements() here to declare subsystem dependencies.
+    this.dt = dt;
     addRequirements(dt);
   }
 

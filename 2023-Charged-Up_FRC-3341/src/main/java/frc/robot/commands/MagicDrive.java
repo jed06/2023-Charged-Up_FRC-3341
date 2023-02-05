@@ -10,7 +10,8 @@ public class MagicDrive extends CommandBase {
   /** Creates a new MagicDrive. */
 public double displacement;
 private final DriveTrain dt;
-  public MagicDrive(DriveTrain dt, double displacement) {
+  
+public MagicDrive(DriveTrain dt, double displacement) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.dt= dt;
     this.displacement= displacement;

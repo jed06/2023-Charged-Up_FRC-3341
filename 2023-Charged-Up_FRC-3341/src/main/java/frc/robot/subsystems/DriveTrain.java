@@ -18,7 +18,7 @@ import edu.wpi.first.util.datalog.DoubleLogEntry;
 import edu.wpi.first.wpilibj.AnalogAccelerometer;
 import edu.wpi.first.wpilibj.DataLogManager;
 import edu.wpi.first.wpilibj.SPI;
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.RobotContainer;
 import frc.robot.Constants;
@@ -54,7 +54,7 @@ public class DriveTrain extends SubsystemBase
     navX = new AHRS(SPI.Port.kMXP);
 
     _leftDriveVictor.follow(leftDriveTalon);
-    _rightDriveVictor.follow(rightDriveTalon);
+    _rightDriveVictor.follow(rightDriveTalon);   
   
     leftDriveTalon.setNeutralMode(NeutralMode.Coast);
     rightDriveTalon.setNeutralMode(NeutralMode.Coast);
@@ -86,6 +86,15 @@ public class DriveTrain extends SubsystemBase
    rightDriveTalon.config_kD(0, 0, 10);
    rightDriveTalon.configMotionAcceleration(2000, 10);
    rightDriveTalon.configMotionCruiseVelocity(386, 10);
+
+  }
+
+
+  public void setPowerLimits(double limit){
+    leftDriveTalon.configPeakOutputForward(limit);
+    leftDriveTalon.configPeakOutputReverse(limit);
+    rightDriveTalon.configPeakOutputForward(limit);
+    rightDriveTalon.configPeakOutputReverse(limit);
 
   }
 
@@ -131,8 +140,9 @@ public class DriveTrain extends SubsystemBase
       logOverride = !logOverride;
     }
     if (logOverride){
-      anglelog.append(getYAngle());
+      anglelog.append(getAngle());
     }
+    SmartDashboard.putNumber("Angle", getAngle());
   }
 
   @Override

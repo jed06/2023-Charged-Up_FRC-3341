@@ -27,6 +27,7 @@ public class RobotContainer {
   private final TankDrive tankDrive;
   private final MagicDrive magicDrive;
   private static DriveTrain dt;
+  private final AutoTurn turn;
   
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
@@ -39,8 +40,9 @@ public class RobotContainer {
     configureButtonBindings();
     // Configure the button bindings
     dt = new DriveTrain();
-    tankDrive = new TankDrive(dt, joystick2, joystick1);
+    tankDrive = new TankDrive(dt, joystick2.getY(), joystick1.getY());
     magicDrive = new MagicDrive(dt, 1.0);
+    turn = new AutoTurn(dt, 90);
 
   }
   public static Joystick getJoy1() {
@@ -69,7 +71,7 @@ public class RobotContainer {
     return dt;
   }
   public Command getAutonomousCommand(){
-    return magicDrive;
+    return turn;
   }
 
 }

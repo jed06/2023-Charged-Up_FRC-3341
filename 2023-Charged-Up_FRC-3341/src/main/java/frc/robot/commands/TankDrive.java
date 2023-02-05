@@ -17,7 +17,7 @@ public class TankDrive extends CommandBase {
   private final double _leftPower; // declares left joystick
   private final double _rightPower; //declares rightjoystick
 
-  public TankDrive(DriveTrain dt, Joystick leftp, Joystick rightp) {
+  public TankDrive(DriveTrain dt, double leftp, double rightp) {
     // Use addRequirements() here to declare subsystem dependencies.
     _driveTrain = dt; //initializes drive train
     _leftPower = leftp; // initializes left joystick
