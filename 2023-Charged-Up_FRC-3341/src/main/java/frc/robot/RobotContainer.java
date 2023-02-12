@@ -41,6 +41,7 @@ public class RobotContainer {
     // Configure the button bindings
     dt = new DriveTrain();
     tankDrive = new TankDrive(dt, joystick2.getY(), joystick1.getY());
+   // dt.setDefaultCommand(tankDrive);
     magicDrive = new MagicDrive(dt, 1.0);
     turn = new AutoTurn(dt, 90);
 

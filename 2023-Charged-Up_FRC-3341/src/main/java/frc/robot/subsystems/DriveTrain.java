@@ -59,8 +59,8 @@ public class DriveTrain extends SubsystemBase
     leftDriveTalon.setNeutralMode(NeutralMode.Coast);
     rightDriveTalon.setNeutralMode(NeutralMode.Coast);
 
-    leftDriveTalon.setInverted(false);
-    rightDriveTalon.setInverted(true);
+    leftDriveTalon.setInverted(true);
+    rightDriveTalon.setInverted(false);
     _leftDriveVictor.setInverted(InvertType.FollowMaster);
     _rightDriveVictor.setInverted(InvertType.FollowMaster);
 
@@ -106,6 +106,8 @@ public class DriveTrain extends SubsystemBase
   public void tankDrive(double leftSpeed, double rightSpeed) {
     leftDriveTalon.set(leftSpeed);
     rightDriveTalon.set(rightSpeed);
+    SmartDashboard.putNumber("leftspeed", leftSpeed);
+    SmartDashboard.putNumber("rightspeed", rightSpeed);
   }
 
   
@@ -133,9 +135,10 @@ public class DriveTrain extends SubsystemBase
     return navX.getAngle();
   }
 
+
   @Override
   public void periodic() {
-    tankDrive(RobotContainer.getJoy1().getY()*-0.2, RobotContainer.getJoy2().getY()*-0.2);
+    tankDrive(RobotContainer.getJoy1().getY()*0.7, RobotContainer.getJoy2().getY()*0.7);
     if (RobotContainer.getJoy1().getRawButtonReleased(12)){
       logOverride = !logOverride;
     }
