@@ -45,7 +45,6 @@ public class DriveTrain extends SubsystemBase
     DataLogManager.start();
     DataLog log = DataLogManager.getLog();
     anglelog = new DoubleLogEntry(log, "/my/double");
-
     
     leftDriveTalon = new WPI_TalonSRX(Constants.OperatorConstants.LeftDriveTalonPort);
     rightDriveTalon = new WPI_TalonSRX(Constants.OperatorConstants.RightDriveTalonPort);
@@ -59,8 +58,8 @@ public class DriveTrain extends SubsystemBase
     leftDriveTalon.setNeutralMode(NeutralMode.Coast);
     rightDriveTalon.setNeutralMode(NeutralMode.Coast);
 
-    leftDriveTalon.setInverted(true);
-    rightDriveTalon.setInverted(false);
+    leftDriveTalon.setInverted(false);
+    rightDriveTalon.setInverted(true);
     _leftDriveVictor.setInverted(InvertType.FollowMaster);
     _rightDriveVictor.setInverted(InvertType.FollowMaster);
 
@@ -86,9 +85,17 @@ public class DriveTrain extends SubsystemBase
    rightDriveTalon.config_kD(0, 0, 10);
    rightDriveTalon.configMotionAcceleration(2000, 10);
    rightDriveTalon.configMotionCruiseVelocity(386, 10);
-
   }
 
+  public void brake(){
+    leftDriveTalon.setNeutralMode(NeutralMode.Brake);
+    rightDriveTalon.setNeutralMode(NeutralMode.Brake);
+  }
+
+  public void coast(){
+    leftDriveTalon.setNeutralMode(NeutralMode.Coast);
+    rightDriveTalon.setNeutralMode(NeutralMode.Coast);
+  }
 
   public void setPowerLimits(double limit){
     leftDriveTalon.configPeakOutputForward(limit);
@@ -112,23 +119,35 @@ public class DriveTrain extends SubsystemBase
 
   
   public void resetEncoders() {
-    leftDriveTalon.setSelectedSensorPosition(0,0,10);
-    rightDriveTalon.setSelectedSensorPosition(0,0,10);
+    leftDriveTalon.setSelectedSensorPosition(0);
+    rightDriveTalon.setSelectedSensorPosition(0);
   }
 
   public void resetNavX(){
     navX.reset();
   }
-  public double getTicks() {
-    return (leftDriveTalon.getSelectedSensorPosition(0) + rightDriveTalon.getSelectedSensorPosition(0)) / 2.0;
+  public double getTicksLeft() {
+    return leftDriveTalon.getSelectedSensorPosition();
+  }
+
+  public double getDisplacementLeft(){
+    return (getTicksLeft() * Constants.OperatorConstants.tickstoMeters);
+  }
+
+  public double getTicksRight() {
+    return rightDriveTalon.getSelectedSensorPosition();
+  }
+
+  public double getDisplacementRight(){
+    return (getTicksRight() * Constants.OperatorConstants.tickstoMeters);
   }
 
   public double getDisplacement(){
-    return (getTicks()/Constants.OperatorConstants.tickstoMeters);
+    return (getDisplacementLeft() + getDisplacementRight()) / 2.0;
   }
 
   public double getYAngle(){
-    return navX.getPitch();
+    return navX.getRoll();
   }
 
   public double getAngle(){
@@ -145,7 +164,8 @@ public class DriveTrain extends SubsystemBase
     if (logOverride){
       anglelog.append(getAngle());
     }
-    SmartDashboard.putNumber("Angle", getAngle());
+    SmartDashboard.putNumber("Displacement: ", getDisplacement());
+    SmartDashboard.putNumber("Angle: ", getYAngle());
   }
 
   @Override

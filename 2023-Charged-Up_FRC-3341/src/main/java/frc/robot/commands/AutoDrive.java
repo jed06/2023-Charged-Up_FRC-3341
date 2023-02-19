@@ -3,49 +3,55 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
-import frc.robot.subsystems.DriveTrain;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class AutoTurn extends CommandBase {
-  /** Creates a new AutoTurn. */
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
+import frc.robot.subsystems.DriveTrain;
+
+public class AutoDrive extends CommandBase {
+  /** Creates a new AutoDrive. */
   DriveTrain dt;
-  double angle;
-  PIDController pidController = new PIDController(0.005, 0, 0);
-  public AutoTurn(DriveTrain dt, double angle) {
+  PIDController pid;
+  double speed;
+  double distance;
+
+  public AutoDrive(DriveTrain dt, double distance) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.dt = dt;
-    this.angle = angle;
+    pid = new PIDController(0.8, 0, 0);
+    speed = 0.5;
+    this.distance = distance;
+    addRequirements(dt);
   }
 
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    dt.resetNavX();
-
-    pidController.setSetpoint(dt.getAngle() + angle);
-    pidController.setTolerance(1);
-    dt.setPowerLimits(0.7);
+    dt.resetEncoders();
+    pid.setSetpoint(distance);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    double speed = pidController.calculate(dt.getAngle());
-    dt.tankDrive(-speed, speed); //right motor is 1.32 times slower than left
-    //dt.tankDrive(0.1*speed, 0.1*speed * 1.32);
+    //speed = pid.calculate(dt.getDisplacement());
+    SmartDashboard.putNumber("Power", speed);
+    dt.tankDrive(speed, speed);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    SmartDashboard.putNumber("End: ", 1);
     dt.tankDrive(0, 0);
-    dt.setPowerLimits(1.0);
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return pidController.atSetpoint();
+    return 0.1 >= Math.abs(distance - dt.getDisplacement()) 
+          || Constants.OperatorConstants.angleThreshhold <= Math.abs(dt.getYAngle());
   }
 }
