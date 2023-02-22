@@ -154,10 +154,9 @@ public class DriveTrain extends SubsystemBase
     return navX.getAngle();
   }
 
-
   @Override
   public void periodic() {
-    tankDrive(RobotContainer.getJoy1().getY()*0.7, RobotContainer.getJoy2().getY()*0.7);
+    tankDrive(RobotContainer.getJoy1().getY()*-0.8, RobotContainer.getJoy1().getThrottle()*-0.8);
     if (RobotContainer.getJoy1().getRawButtonReleased(12)){
       logOverride = !logOverride;
     }
@@ -166,6 +165,7 @@ public class DriveTrain extends SubsystemBase
     }
     SmartDashboard.putNumber("Displacement: ", getDisplacement());
     SmartDashboard.putNumber("Angle: ", getYAngle());
+    SmartDashboard.putNumber("Yaw Angle: ", getAngle());
   }
 
   @Override

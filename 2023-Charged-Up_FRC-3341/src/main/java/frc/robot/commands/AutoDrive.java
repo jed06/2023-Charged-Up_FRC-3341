@@ -21,7 +21,7 @@ public class AutoDrive extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     this.dt = dt;
     pid = new PIDController(0.8, 0, 0);
-    speed = 0.5;
+    speed = 0.9;
     this.distance = distance;
     addRequirements(dt);
   }
@@ -44,7 +44,6 @@ public class AutoDrive extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    SmartDashboard.putNumber("End: ", 1);
     dt.tankDrive(0, 0);
   }
 
