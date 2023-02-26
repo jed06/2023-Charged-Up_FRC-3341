@@ -7,6 +7,7 @@ package frc.robot.commands;
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
@@ -17,20 +18,28 @@ public class AutoBalance extends CommandBase {
   DriveTrain dt;
   //double maxPower = 0.5; //if the robot was vertical(theoretically) the talons would go at this power 
   double maxSpeed;
+  double balanceDistance;
   double angleThreshhold;
   double initialYaw;
+  double waitTime;
   boolean nearTop = false;
+  boolean isbalanced =false;
 
   PIDController pid;
   PIDController yawPID;
 
+  Timer timer;
+
   public AutoBalance( DriveTrain dt) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.dt = dt;
-    maxSpeed = 0.8;
-    pid = new PIDController(0.5, 0.2, 0.25);
+    maxSpeed = 0.6;
+    balanceDistance = 1.4;
+    waitTime = 0.5;
+    pid = new PIDController(0.3, 0.4, 0.25);
     yawPID = new PIDController(0.02, 0, 0);
     angleThreshhold = Constants.OperatorConstants.angleThreshhold;
+    timer = new Timer();
     addRequirements(dt);
   }
 
@@ -38,56 +47,60 @@ public class AutoBalance extends CommandBase {
   @Override
   public void initialize() {
     dt.resetEncoders();
-    pid.setSetpoint(Constants.OperatorConstants.balanceDistance);
+    pid.setSetpoint(balanceDistance);
     yawPID.setSetpoint(dt.getAngle());
+    timer.start();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if(dt.getDisplacement() > 1) maxSpeed = 0.45;
-    else if(dt.getDisplacement() > .5) maxSpeed = 0.5;
+    if(dt.getDisplacement() > 1) maxSpeed = 0.37;
+    else if(dt.getDisplacement() > .5) maxSpeed = 0.4;
 
     double pidSpeed = pid.calculate(dt.getDisplacement());
     double speed = Math.min(Math.abs(pidSpeed), maxSpeed) * Math.abs(pidSpeed)/pidSpeed;
     double turningSpeed = yawPID.calculate(dt.getAngle());
+    double minSpeed = .22 * Math.abs(dt.getYAngle())/dt.getYAngle();
     
     SmartDashboard.putNumber("PID Speed: ", pidSpeed);
     SmartDashboard.putNumber("Docking Speed: ", speed);
-    SmartDashboard.putNumber("DockDistance: ", Constants.OperatorConstants.balanceDistance);
+    SmartDashboard.putNumber("DockDistance: ", balanceDistance);
+    SmartDashboard.putBoolean("Balanced: ", isbalanced);
 
-    dt.tankDrive(speed + turningSpeed, speed - turningSpeed);
-
-    if(0.005 >= Math.abs(Constants.OperatorConstants.balanceDistance - dt.getDisplacement()) 
-                && Constants.OperatorConstants.angleThreshhold <= Math.abs(dt.getYAngle())){
-      Constants.OperatorConstants.balanceDistance -= 0.01 * Math.abs(dt.getYAngle())/dt.getYAngle();
-      pid.setSetpoint(Constants.OperatorConstants.balanceDistance);
+    /* 
+    if(dt.getDisplacement() > balanceDistance + 0.1 && dt.getYAngle() > angleThreshhold){
+      balanceDistance = dt.getDisplacement() - 0.1;
     }
-    
-    /*String idk = "";
-    if(!nearTop){
-      if(0.01 >= Math.abs(Constants.OperatorConstants.balanceDistance - dt.getDisplacement())){
-        nearTop = true;
-      }else{
+    */
+    if(3 > Math.abs(dt.getYAngle()) && !isbalanced){
+      isbalanced = true;
+      timer.reset();
+      dt.tankDrive(-1*maxSpeed, -1*maxSpeed);
+      dt.brake();
+    }else if (!isbalanced){ 
+      if(0.01 >= Math.abs(balanceDistance - dt.getDisplacement()) && angleThreshhold < Math.abs(dt.getYAngle())){
+        if(timer.get() > 0.5){
+          balanceDistance += 0.01 * Math.abs(dt.getYAngle())/dt.getYAngle();
+          pid.setSetpoint(balanceDistance);
+          timer.reset();
+          waitTime += 0.1;
+        }else{
+          dt.tankDrive(minSpeed, minSpeed);
+        }
+      }else {
         dt.tankDrive(speed + turningSpeed, speed - turningSpeed);
-        idk = "distance";
       }
     }else{
-      if(Constants.OperatorConstants.angleThreshhold <= Math.abs(dt.getYAngle())){
-        double sign = -1*Math.abs(dt.getYAngle()) / dt.getYAngle();
-        SmartDashboard.putNumber("sign: ", sign);
-        dt.tankDrive(sign*baseSpeed + turningSpeed, sign*baseSpeed - turningSpeed);
-        idk = "angle";
-      }
+      dt.coast();
+      isbalanced = false;
     }
-    SmartDashboard.putString("idk: ", idk);
-    */
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    dt.tankDrive(-0.5, -0.5);
+    dt.tankDrive(0, 0);
     dt.brake();
   }
 
@@ -96,6 +109,6 @@ public class AutoBalance extends CommandBase {
   public boolean isFinished() {
     //return .03 >= Math.abs(Constants.OperatorConstants.balanceDistance - dt.getDisplacement());
     //return false;
-    return 3 >= Math.abs(dt.getYAngle());
+    return 3 >= Math.abs(dt.getYAngle()) && timer.get() > 2;
   }
 }

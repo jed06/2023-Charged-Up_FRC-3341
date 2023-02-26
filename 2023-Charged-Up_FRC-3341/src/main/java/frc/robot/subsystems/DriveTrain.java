@@ -156,7 +156,7 @@ public class DriveTrain extends SubsystemBase
 
   @Override
   public void periodic() {
-    tankDrive(RobotContainer.getJoy1().getY()*-0.8, RobotContainer.getJoy1().getThrottle()*-0.8);
+    tankDrive(RobotContainer.getJoy1().getY()*-0.4, RobotContainer.getJoy1().getThrottle()*-0.4);
     if (RobotContainer.getJoy1().getRawButtonReleased(12)){
       logOverride = !logOverride;
     }
@@ -166,6 +166,7 @@ public class DriveTrain extends SubsystemBase
     SmartDashboard.putNumber("Displacement: ", getDisplacement());
     SmartDashboard.putNumber("Angle: ", getYAngle());
     SmartDashboard.putNumber("Yaw Angle: ", getAngle());
+    SmartDashboard.putNumber("Power", (RobotContainer.getJoy1().getY() + RobotContainer.getJoy1().getThrottle())*-0.2);
   }
 
   @Override

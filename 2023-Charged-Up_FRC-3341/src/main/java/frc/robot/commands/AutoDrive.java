@@ -37,7 +37,6 @@ public class AutoDrive extends CommandBase {
   @Override
   public void execute() {
     //speed = pid.calculate(dt.getDisplacement());
-    SmartDashboard.putNumber("Power", speed);
     dt.tankDrive(speed, speed);
   }
 
@@ -50,7 +49,6 @@ public class AutoDrive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return 0.1 >= Math.abs(distance - dt.getDisplacement()) 
-          || Constants.OperatorConstants.angleThreshhold <= Math.abs(dt.getYAngle());
+    return 0.1 >= Math.abs(distance - dt.getDisplacement()) || Constants.OperatorConstants.angleThreshhold <= Math.abs(dt.getYAngle());
   }
 }

@@ -26,7 +26,6 @@ public final class Constants {
     public static final int Zero = 0;
     public static final int One = 1;
     public static final double angleThreshhold = 5.0;
-    public static double balanceDistance = 1.37;
     public static final double tickstoMeters = 15.5*Math.PI/(100.0*4096.0);
 
   }
