@@ -21,7 +21,7 @@ public class AutoDrive extends CommandBase {
     // Use addRequirements() here to declare subsystem dependencies.
     this.dt = dt;
     pid = new PIDController(0.8, 0, 0);
-    speed = 0.9;
+    speed = 0.75;
     this.distance = distance;
     addRequirements(dt);
   }
@@ -49,6 +49,6 @@ public class AutoDrive extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return 0.1 >= Math.abs(distance - dt.getDisplacement()) || Constants.OperatorConstants.angleThreshhold <= Math.abs(dt.getYAngle());
+    return 0.1 >= Math.abs(distance - dt.getDisplacement()) || Constants.OperatorConstants.angleThreshhold + 3 <= Math.abs(dt.getYAngle());
   }
 }
