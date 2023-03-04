@@ -24,6 +24,7 @@ import frc.robot.subsystems.*;
 public class RobotContainer {
   public static Joystick joystick2;
   public static Joystick joystick1;
+  public static XboxController xbox;
   private final TankDrive tankDrive;
   private final MagicDrive magicDrive;
   private static DriveTrain dt;
@@ -40,6 +41,7 @@ public class RobotContainer {
   public RobotContainer() {
     joystick1 = new Joystick(0);
     joystick2 = new Joystick(1);
+    xbox = new XboxController(3);
     configureButtonBindings();
     // Configure the button bindings
     
@@ -51,7 +53,7 @@ public class RobotContainer {
    // dt.setDefaultCommand(tankDrive);
     magicDrive = new MagicDrive(dt, 1.0);
     turn = new AutoTurn(dt, 90);
-    forward = new AutoDrive(dt, 2.0);
+    forward = new AutoDrive(dt, 5.69);
     balance = new AutoBalance(dt);
     dock = new Docking(dt);
   }
@@ -60,6 +62,10 @@ public class RobotContainer {
   }
   public static Joystick getJoy2() {
     return joystick2;
+  }
+
+  public static XboxController getXBox() {
+    return xbox;
   }
  
 

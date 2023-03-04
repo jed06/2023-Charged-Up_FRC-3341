@@ -156,7 +156,8 @@ public class DriveTrain extends SubsystemBase
 
   @Override
   public void periodic() {
-    tankDrive(RobotContainer.getJoy1().getY()*-0.4, RobotContainer.getJoy1().getThrottle()*-0.4);
+    tankDrive(RobotContainer.getJoy1().getY()*-0.3, RobotContainer.getJoy2().getY()*-0.3);
+    //tankDrive(RobotContainer.getJoy1().getY()*-0.3, RobotContainer.getJoy1().getThrottle()*-0.3);
     if (RobotContainer.getJoy1().getRawButtonReleased(12)){
       logOverride = !logOverride;
     }
