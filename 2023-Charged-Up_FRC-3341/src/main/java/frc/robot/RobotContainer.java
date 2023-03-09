@@ -4,60 +4,90 @@
 
 package frc.robot;
 
-import frc.robot.Constants.OperatorConstants;
-import frc.robot.commands.Autos;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj.Joystick;
+import frc.robot.commands.*;
+import frc.robot.subsystems.*;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
+ * This class is where the bulk of the robot shoul
+ * d be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
  * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
- * subsystems, commands, and trigger mappings) should be declared here.
+ * subsystems, commands, and button mappings) should be declared here.
  */
+
 public class RobotContainer {
+  public static Joystick joystick2;
+  public static Joystick joystick1;
+  public static XboxController xbox;
+  private final TankDrive tankDrive;
+  private final MagicDrive magicDrive;
+  private static DriveTrain dt;
+  private final AutoTurn turn;
+  private final AutoDrive forward;
+  private final AutoBalance balance;
+  private final Docking dock;
+  
   // The robot's subsystems and commands are defined here...
   private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
-
-  // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController =
-      new CommandXboxController(OperatorConstants.kDriverControllerPort);
-
+  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+ 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    // Configure the trigger bindings
-    configureBindings();
+    joystick1 = new Joystick(0);
+    joystick2 = new Joystick(1);
+    xbox = new XboxController(3);
+    configureButtonBindings();
+    // Configure the button bindings
+    
+    dt = new DriveTrain();
+    dt.resetEncoders();
+    dt.coast();
+
+    tankDrive = new TankDrive(dt, joystick2.getY(), joystick1.getY());
+   // dt.setDefaultCommand(tankDrive);
+    magicDrive = new MagicDrive(dt, 1.0);
+    turn = new AutoTurn(dt, 90);
+    forward = new AutoDrive(dt, 5.69);
+    balance = new AutoBalance(dt);
+    dock = new Docking(dt);
   }
+  public static Joystick getJoy1() {
+    return joystick1;
+  }
+  public static Joystick getJoy2() {
+    return joystick2;
+  }
+
+  public static XboxController getXBox() {
+    return xbox;
+  }
+ 
 
   /**
-   * Use this method to define your trigger->command mappings. Triggers can be created via the
-   * {@link Trigger#Trigger(java.util.function.BooleanSupplier)} constructor with an arbitrary
-   * predicate, or via the named factories in {@link
-   * edu.wpi.first.wpilibj2.command.button.CommandGenericHID}'s subclasses for {@link
-   * CommandXboxController Xbox}/{@link edu.wpi.first.wpilibj2.command.button.CommandPS4Controller
-   * PS4} controllers or {@link edu.wpi.first.wpilibj2.command.button.CommandJoystick Flight
-   * joysticks}.
+   * Use this method to define your button->command mappings. Buttons can be created by
+   * instantiating a {@link GenericHID} or one of its subclasses ({@link
+   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
+   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureBindings() {
-    // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    new Trigger(m_exampleSubsystem::exampleCondition)
-        .onTrue(new ExampleCommand(m_exampleSubsystem));
-
-    // Schedule `exampleMethodCommand` when the Xbox controller's B button is pressed,
-    // cancelling on release.
-    m_driverController.b().whileTrue(m_exampleSubsystem.exampleMethodCommand());
-  }
+  private void configureButtonBindings() {}
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
    * @return the command to run in autonomous
    */
-  public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
-    return Autos.exampleAuto(m_exampleSubsystem);
+  
+   public static DriveTrain getDriveTrain(){
+    return dt;
   }
+  public Command getAutonomousCommand(){
+    return dock;
+  }
+
 }
