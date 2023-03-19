@@ -15,6 +15,11 @@ public class RedMiddle extends SequentialCommandGroup {
   public RedMiddle(DriveTrain dt) {
     // Add your commands in the addCommands() call, e.g.
     // addCommands(new FooCommand(), new BarCommand());
-    addCommands();
+    addCommands(
+      // arm code to place preloaded game peice
+      // arm code to 
+      new AutoTurn (dt, 180.0),
+      new Docking(dt)    
+    );
   }
 }
