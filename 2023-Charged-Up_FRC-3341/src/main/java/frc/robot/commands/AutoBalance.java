@@ -39,7 +39,7 @@ public class AutoBalance extends CommandBase {
   public AutoBalance( DriveTrain dt) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.dt = dt;
-    pid = new PIDController(0.2, 0.3, 0.4);
+    pid = new PIDController(0.2, 0.4, 0.4);
     yawPID = new PIDController(0.02, 0, 0);
     angleThreshhold = Constants.OperatorConstants.angleThreshhold;
     timer = new Timer();
@@ -59,8 +59,8 @@ public class AutoBalance extends CommandBase {
     executeTimer.start();
 
     maxSpeed = 0.6;
-    balanceDistance = 1.21;
-    waitTime = 0.75;
+    balanceDistance = 1.25;
+    waitTime = 0.6;
     isbalanced = false;
   }
 
@@ -89,6 +89,8 @@ public class AutoBalance extends CommandBase {
     SmartDashboard.putNumber("Delta Angle: ", deltaAngle);
     SmartDashboard.putBoolean("Balanced: ", isbalanced);
 
+    if(10 > Math.abs(dt.getYAngle())) pid.reset();
+
     if(!isbalanced){
       if(dt.getDisplacement() > 1 && angleThreshhold > Math.abs(dt.getYAngle())){
         isbalanced = true;
@@ -99,7 +101,7 @@ public class AutoBalance extends CommandBase {
           balanceDistance += 0.01 * Math.abs(dt.getYAngle())/dt.getYAngle();
           pid.setSetpoint(balanceDistance);
           timer.reset();
-          waitTime += 0.07;
+          //waitTime += 0.07;
         }else{
           dt.tankDrive(minSpeed, minSpeed);
         }
